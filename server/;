@@ -1,0 +1,63 @@
+package main
+
+import "os"
+import "log"
+import "encoding/gob"
+
+/* System Collection UIDs. */
+const ALL_SYS_COL uint32 = 0
+const UNK_SYS_COL uint32 = 1
+const OFF_SYS_COL uint32 = 2
+
+var allCollections map[uint32]*Collection = make(map[uint32]*Collection)
+
+type CollectionStore struct {
+	collections	map[uint32]*Collection
+	file		*os.File
+}
+
+func NewCollectionStore(filename string) *CollectionStore {
+	s := &CollectionStore {collections: make(map[uint32]*Collection)}
+	f, err := os.Open(filename, os.O_RDRW|os.O_CREATE|os.O_APPEND, 0644)
+	if (err != nil) {
+		log.Fatal("CollectionStore:", err)
+	}
+	s.file = f
+	return s
+}
+
+type collectionRecord struct {
+	key uint32
+	col *Collection
+}
+
+func (s *CollectionStore) loadCollections() os.Error {
+	if _, err := s.file.Seek(0, 0); err != nil {
+		return err
+	}
+	d := gob.NewDecoder(s.file)
+	var err os.Error
+	for err == nil {
+		var r record
+		if err = d.Decode(&r); err ==nil {
+			s.collections[r.key] = r.col
+		}
+	}
+	if err == os.EOF {
+		return nil
+	}
+	return err
+}
+
+func (s *CollectionStore) saveCollections(key uint32, col *Collection) os.Error {
+	e := gob.NewEncoder(s.file)
+	return e.Encode(record{key, url})
+}
+
+func (s *CollectionStore) Get(key uint32) *Collection {
+	return s.collections[key]
+}
+
+func (s *CollectionStore) Put(key uint32, col *Collection) {
+	collections[key] = col
+}

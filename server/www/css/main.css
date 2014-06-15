@@ -1,0 +1,81 @@
+body {
+	background-image: url('/static/img/bg.jpg');
+	color: #ccc;
+	font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+	margin: 0;
+	white-space: nowrap;
+}
+
+html, body {height: 100%;}
+
+h2 {
+	font-family: sans-serif;
+	margin: 15px 30px 15px 30px;
+	color: white;
+	font-weight: bold;
+}
+
+div{
+	vertical-align:top;
+}
+
+#left-menu {
+	height: 100%;
+	display: inline-block;
+	overflow-y: auto;
+	overflow-x: hidden;
+	background-color: #333;
+	-moz-user-select: none;
+	-webkit-user-select: none;
+	-ms-user-select: none;
+	user-select: none;
+}
+
+#left-menu h2 {
+	background-color: #38989c;
+	margin: 0;
+	padding: 15px 30px 15px 15px;
+}
+
+#right {
+	display: inline-block;
+	height: 100%;
+	overflow-y: auto;
+	overflow-x: hidden;
+}
+
+#content {
+	padding: 30px 30px 30px 50px;
+	width: 100%;
+}
+
+.load {
+	width: 30px;
+	height: 30px;
+	position: absolute;
+	top: 45%;
+	border-radius: 50%;
+}
+
+.load:nth-child(1) {
+	background-color: #FF5460;
+	animation: move 2s infinite cubic-bezier(.2,.64,.81,.23);
+}
+.load:nth-child(2) {
+	background-color: #FF9D84;
+	animation: move 2s 150ms infinite cubic-bezier(.2,.64,.81,.23);
+}
+.load:nth-child(3) {
+	background-color: #F0E797;
+	animation: move 2s 300ms infinite cubic-bezier(.2,.64,.81,.23);
+}
+.load:nth-child(4) {
+	background-color: #75B08A;
+	animation: move 2s 450ms infinite cubic-bezier(.2,.64,.81,.23);
+}
+
+
+@keyframes move {
+	0% {left: 0%;}
+	100% {left:97%;}
+}
