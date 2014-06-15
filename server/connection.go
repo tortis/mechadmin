@@ -31,12 +31,7 @@ func (c *connection) reader() {
 		switch req.R {
 		case "list-comp":
 			colUID64, _ := strconv.ParseUint(req.A1, 10, 32)
-			colUID := uint32(colUID64)
-			response, err := json.Marshal(allCollections[colUID].Computers)
-			if err != nil {
-				println("Failed to encode comptuers map")
-				break
-			}
+			response := []byte("{temp: test,requested:"+strconv.FormatUint(colUID64, 10)+"}")
 			c.send <- response
 		case "eat-shit":
 		}

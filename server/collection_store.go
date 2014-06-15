@@ -10,8 +10,6 @@ const ALL_SYS_COL uint32 = 0
 const UNK_SYS_COL uint32 = 1
 const OFF_SYS_COL uint32 = 2
 
-var allCollections map[uint32]*Collection = make(map[uint32]*Collection)
-
 type CollectionStore struct {
 	collections	map[uint32]*Collection
 	file		*os.File
