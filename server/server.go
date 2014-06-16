@@ -45,7 +45,7 @@ func main() {
 
 	/*------------End Testing--------------*/
 
-	go StartWebServer(root)
+	go StartWebServer()
 	for {
 		println("Waiting for status packet.")
 		rlen, _, err := sock.ReadFromUDP(buffer)
