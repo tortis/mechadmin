@@ -4,9 +4,6 @@ import "math/rand"
 import "strconv"
 import "io/ioutil"
 import "encoding/json"
-import "os"
-import "os/signal"
-import "log"
 
 type CollectionTree struct {
 	Name         string
@@ -14,54 +11,6 @@ type CollectionTree struct {
 	Children     []*CollectionTree // For OUs
 	IsSystem     bool
 	IsCollection bool
-}
-
-var root *CollectionTree = &CollectionTree{}
-
-func init() {
-	ColStore = NewCollectionStore("colstore.gob")
-
-	// Load root tree from file or create a new one.
-	if err := loadRootTree(); err != nil {
-		log.Fatal("CollectionTree:", err)
-	}
-
-	// Register to recieve the interrup signal so that
-	// the root tree can be saved before the program exits.
-	// The root tree should still be saved at a regular interval.
-	c := make(chan os.Signal, 1)
-	signal.Notify(c, os.Interrupt)
-	go func() {
-		<-c
-		if saveRootTree() != nil {
-			println("\nError! The root collection tree could not be saved before the program stopped. Some data may have been lost.")
-			os.Exit(1)
-		} else {
-			println("\nSuccessfully saved root collection tree.")
-			os.Exit(0)
-		}
-	}()
-}
-
-func loadRootTree() error {
-	jsonByte, err := ioutil.ReadFile("root.json")
-	if err != nil {
-		root = NewCollectionTree()
-		println("root.json was not found. Creating new collection tree.")
-		return nil
-	} else {
-		println("root.json found. Loading collection tree.")
-		err = json.Unmarshal(jsonByte, root)
-		return err
-	}
-}
-
-func saveRootTree() error {
-	b, err := json.Marshal(root)
-	if err != nil {
-		return err
-	}
-	return ioutil.WriteFile("root.json", b, 0644)
 }
 
 func NewCollectionTree() *CollectionTree {
@@ -101,6 +50,27 @@ func NewCollectionTree() *CollectionTree {
 	t.Children = append(t.Children, offSys)
 
 	return t
+}
+
+func LoadTree(filename string) (*CollectionTree, error) {
+	jsonByte, err := ioutil.ReadFile(filename)
+	if err != nil {
+		t := NewCollectionTree()
+		println(filename+" was not found. Creating new collection tree.")
+		return t, nil
+	} else {
+		println(filename+" found. Loading collection tree.")
+		err = json.Unmarshal(jsonByte, root)
+		return nil, err
+	}
+}
+
+func (t *CollectionTree) Save(filename string) error {
+	b, err := json.Marshal(t)
+	if err != nil {
+		return err
+	}
+	return ioutil.WriteFile(filename, b, 0644)
 }
 
 func (t *CollectionTree) NewOU(name string) *CollectionTree {

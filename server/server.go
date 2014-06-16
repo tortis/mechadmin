@@ -5,6 +5,8 @@ import "log"
 import "encoding/json"
 import "time"
 import "github.com/tortis/cstatus/types"
+import "os"
+import "os/signal"
 
 func checkError(err error) {
 	if err != nil {
@@ -12,7 +14,42 @@ func checkError(err error) {
 	}
 }
 
+/* Global variables */
 var ColStore *CollectionStore
+//var CompStore *ComputerStore
+var root *CollectionTree = &CollectionTree{}
+var wsHub = hub{
+	broadcast:   make(chan []byte),
+	register:    make(chan *connection),
+	unregister:  make(chan *connection),
+	connections: make(map[*connection]bool),
+}
+
+func init() {
+	ColStore = NewCollectionStore("colstore.gob")
+
+	// Load root tree from file or create a new one.
+	var err error
+	if root, err = LoadTree("root.json"); err != nil {
+		log.Fatal("CollectionTree:", err)
+	}
+
+	// Register to recieve the interrup signal so that
+	// the root tree can be saved before the program exits.
+	// The root tree should still be saved at a regular interval.
+	c := make(chan os.Signal, 1)
+	signal.Notify(c, os.Interrupt)
+	go func() {
+		<-c
+		if root.Save("root.json") != nil {
+			println("\nError! The root collection tree could not be saved before the program stopped. Some data may have been lost.")
+			os.Exit(1)
+		} else {
+			println("\nSuccessfully saved root collection tree.")
+			os.Exit(0)
+		}
+	}()
+}
 
 func main() {
 	var buffer []byte = make([]byte, 1024, 1024)
