@@ -5,11 +5,6 @@ import "log"
 import "encoding/gob"
 import "io"
 
-/* System Collection UIDs. */
-const ALL_SYS_COL uint32 = 0
-const UNK_SYS_COL uint32 = 1
-const OFF_SYS_COL uint32 = 2
-
 type CollectionStore struct {
 	collections	map[uint32]*Collection
 	file		*os.File

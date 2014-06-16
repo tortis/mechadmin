@@ -2,6 +2,11 @@ package main
 
 import "sort"
 
+/* System Collection UIDs. */
+const ALL_SYS_COL uint32 = 0
+const UNK_SYS_COL uint32 = 1
+const OFF_SYS_COL uint32 = 2
+
 type Collection struct {
 	Name      string
 	UID       uint32
