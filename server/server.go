@@ -28,6 +28,21 @@ func main() {
 	//lsOU := root.NewOU(`Learning Spaces`)
 	//lsOU.NewCol(`COE`)
 	//lsOU.NewCol(`COA`)
+
+	//println("Creating collection named 'test'")
+	//tCol := NewCollection("Test", uint32(1234))
+	//println("Adding computer named 'COMP1'")
+	//tCol.AddComputer("COMP1")
+	//println("Adding computer named 'COMP2'")
+	//tCol.AddComputer("COMP2")
+	//println("Printing list of computers.")
+	//tCol.PrintComputers()
+	//println("Removing computer named 'COMP2'")
+	//tCol.RemoveComputer("COMP2")
+	//println()
+	//println("Printing list of computers.")
+	//tCol.PrintComputers()
+
 	/*------------End Testing--------------*/
 
 	go StartWebServer(root)
