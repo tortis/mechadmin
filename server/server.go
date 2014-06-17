@@ -17,7 +17,7 @@ func checkError(err error) {
 /* Global variables */
 var ColStore *CollectionStore
 //var CompStore *ComputerStore
-var root *CollectionTree = &CollectionTree{}
+var root *CollectionTree
 var wsHub = hub{
 	broadcast:   make(chan []byte),
 	register:    make(chan *connection),
@@ -29,9 +29,9 @@ func init() {
 	ColStore = NewCollectionStore("colstore.gob")
 
 	// Load root tree from file or create a new one.
-	var err error
-	if root, err = LoadTree("root.json"); err != nil {
-		log.Fatal("CollectionTree:", err)
+	root = LoadTree("root.json")
+	if root == nil {
+		log.Fatal("Failed to create collection tree.")
 	}
 
 	// Register to recieve the interrup signal so that
@@ -90,6 +90,7 @@ func main() {
 
 		json.Unmarshal(buffer[0:rlen], &s)
 		UpdateComputer(&s)
+		ColStore.Get(ALL_SYS_COL).AddComputer(s.CN)
 
 		println("Computer: " + s.CN)
 		println("User: " + s.UD + "\\" + s.UN)
