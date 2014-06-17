@@ -23,6 +23,9 @@ func NewCollection(name string, uid uint32) *Collection {
 }
 
 func (col *Collection) AddComputer(name string) {
+	if col.ContainsComputer(name) {
+		return
+	}
 	col.Computers = append(col.Computers, name)
 	sort.Strings(col.Computers)
 	wsHub.broadcast <- []byte("Adding new computer, " + name + " into collection, " + col.Name)
@@ -39,7 +42,11 @@ func (col *Collection) RemoveComputer(name string) bool {
 }
 
 func (col *Collection) ContainsComputer(name string) bool {
-	if result := sort.SearchStrings(col.Computers, name); col.Computers[result] == name {
+	result := sort.SearchStrings(col.Computers, name)
+	if result >= len(col.Computers)  {
+		return false
+	}
+	if col.Computers[result] == name {
 		return true;
 	} else {
 		return false;
