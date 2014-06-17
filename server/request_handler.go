@@ -1,6 +1,7 @@
 package main
 
 import "strconv"
+import "encoding/json"
 
 type WSRequest struct {
 	R  string
@@ -13,8 +14,9 @@ func (r *WSRequest) Handle(c *connection) {
 	switch r.R {
 	case "list-comp":
 		colUID64, _ := strconv.ParseUint(r.A1, 10, 32)
-		response := []byte("{temp: test,requested:" + strconv.FormatUint(colUID64, 10) + "}")
-		c.send <- response
+		rJSON, err := json.Marshal(ColStore.Get(uint32(colUID64)).Computers)
+		checkError(err)
+		c.send <- rJSON 
 	case "new-col":
 	default:
 		c.send <- []byte("UR")
