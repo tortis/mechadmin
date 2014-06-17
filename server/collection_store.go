@@ -55,7 +55,7 @@ func (s *CollectionStore) Get(key uint32) *Collection {
 	return s.collections[key]
 }
 
-func (s *CollectionStore) Put(key uint32, col *Collection) {
+func (s *CollectionStore) Put(key uint32, col *Collection) error {
 	s.collections[key] = col
-	s.saveCollection(key, col)
+	return s.saveCollection(key, col)
 }
