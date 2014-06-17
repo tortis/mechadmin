@@ -4,7 +4,7 @@ import "net"
 import "log"
 import "encoding/json"
 import "time"
-import "github.com/tortis/cstatus/types"
+import "github.com/tortis/mechadmin/types"
 import "os"
 import "os/signal"
 
@@ -16,6 +16,7 @@ func checkError(err error) {
 
 /* Global variables */
 var ColStore *CollectionStore
+var CompStore *ComputerStore
 //var CompStore *ComputerStore
 var root *CollectionTree
 var wsHub = hub{
@@ -27,6 +28,7 @@ var wsHub = hub{
 
 func init() {
 	ColStore = NewCollectionStore("colstore.gob")
+	CompStore = NewComputerStore("compstore.gob")
 
 	// Load root tree from file or create a new one.
 	root = LoadTree("root.json")
@@ -55,10 +57,10 @@ func main() {
 	var buffer []byte = make([]byte, 1024, 1024)
 
 	addr, err := net.ResolveUDPAddr("udp", ":69")
+	checkError(err)
 	sock, err := net.ListenUDP("udp", addr)
 	checkError(err)
 
-	var s types.Status
 
 	/*------------ Testing-----------------*/
 	//root.NewCol(`Learning Spaces`)
@@ -82,15 +84,14 @@ func main() {
 
 	/*------------End Testing--------------*/
 
+	var s types.Status
 	go StartWebServer()
 	for {
 		println("Waiting for status packet.")
 		rlen, _, err := sock.ReadFromUDP(buffer)
 		checkError(err)
-
 		json.Unmarshal(buffer[0:rlen], &s)
-		UpdateComputer(&s)
-		ColStore.Get(ALL_SYS_COL).AddComputer(s.CN)
+		CompStore.UpdateOrAddComputer(&s)
 
 		println("Computer: " + s.CN)
 		println("User: " + s.UD + "\\" + s.UN)
