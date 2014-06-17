@@ -4,6 +4,7 @@ import "math/rand"
 import "strconv"
 import "io/ioutil"
 import "encoding/json"
+import "log"
 
 type CollectionTree struct {
 	Name         string
@@ -17,7 +18,7 @@ func NewCollectionTree() *CollectionTree {
 	t := &CollectionTree{
 		Name:         `Collections`,
 		UID:          rand.Uint32(),
-		Children:     make([]*CollectionTree, 0, 10),
+		Children:     make([]*CollectionTree, 0, 0),
 		IsSystem:     true,
 		IsCollection: false,
 	}
@@ -25,6 +26,7 @@ func NewCollectionTree() *CollectionTree {
 	allSys := &CollectionTree{
 		Name:         `All Systems`,
 		UID:          ALL_SYS_COL,
+		Children:     make([]*CollectionTree, 0, 0),
 		IsSystem:     true,
 		IsCollection: true,
 	}
@@ -34,6 +36,7 @@ func NewCollectionTree() *CollectionTree {
 	unkSys := &CollectionTree{
 		Name:         `Unknown Systems`,
 		UID:          UNK_SYS_COL,
+		Children:     make([]*CollectionTree, 0, 0),
 		IsSystem:     true,
 		IsCollection: true,
 	}
@@ -43,6 +46,7 @@ func NewCollectionTree() *CollectionTree {
 	offSys := &CollectionTree{
 		Name:         `Offline Systems`,
 		UID:          OFF_SYS_COL,
+		Children:     make([]*CollectionTree, 0, 0),
 		IsSystem:     true,
 		IsCollection: true,
 	}
@@ -52,16 +56,20 @@ func NewCollectionTree() *CollectionTree {
 	return t
 }
 
-func LoadTree(filename string) (*CollectionTree, error) {
+func LoadTree(filename string) *CollectionTree {
 	jsonByte, err := ioutil.ReadFile(filename)
+	var r *CollectionTree
 	if err != nil {
-		t := NewCollectionTree()
-		println(filename+" was not found. Creating new collection tree.")
-		return t, nil
+		println(filename+" was not found. Creating new tree.")
+		return NewCollectionTree()
 	} else {
 		println(filename+" found. Loading collection tree.")
-		err = json.Unmarshal(jsonByte, root)
-		return nil, err
+		err = json.Unmarshal(jsonByte, r)
+		if err != nil {
+			log.Println("Failed to unmarshal "+filename+". Creating new tree.")
+			return NewCollectionTree()
+		}
+		return r
 	}
 }
 
