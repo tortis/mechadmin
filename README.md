@@ -10,5 +10,3 @@ The system includes a client which is a Windows service that runs in the backgro
 
 Mechanical Admin is developed by David Findley (david.findley@ou.edu)
 
-CStatus is a minimalistic computer management and monitoring system. It includes a client which is installed on the computers to be managed, and a server which communicates with the computer clients as well as web clients through the management interface. The primary goal is to provide real time information about the power state of the client and if it is currently in use. In the future it may include a job system that would allow administrators to run tasks on collections of client computers.
-
