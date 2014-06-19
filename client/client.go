@@ -1,4 +1,5 @@
 package main
+
 import "net"
 import "log"
 import "os"
@@ -7,7 +8,10 @@ import "encoding/json"
 import "time"
 import "os/exec"
 import "regexp"
-import "github.com/tortis/cstatus/types"
+import "flag"
+import "github.com/tortis/mechadmin/types"
+
+var ip = flag.String("s", "localhost", "Specify the hostname or IP of the management server.")
 
 func checkError(err error) {
 	if err != nil {
@@ -19,15 +23,15 @@ func getActiveUser() (string, bool) {
 	u := ""
 	a := false
 	session, _ := exec.Command("cmd", "/C", "query", "session").Output()
-		// Pull result of "query session"
+	// Pull result of "query session"
 	exp, _ := regexp.Compile(`\s+`)
-		// Create an expression that matches whitespace
+	// Create an expression that matches whitespace
 	res := exp.Split(string(session), -1)
-		// Split the session output on whitespace
-	for index,element := range res {	// Loop over the array
-		if element == "Active" {		// And if we find "Active"
+	// Split the session output on whitespace
+	for index, element := range res { // Loop over the array
+		if element == "Active" { // And if we find "Active"
 			a = true
-			u = res[index - 2]
+			u = res[index-2]
 			break
 		}
 	}
@@ -45,14 +49,14 @@ func heartBeat(socket *net.UDPConn, host *net.UDPAddr, quit chan int, resync tim
 		s.UD = os.Getenv("USERDOMAIN")
 		s.CN = os.Getenv("COMPUTERNAME")
 		s.T = time.Now()
-		s.UN, s.A = getActiveUser()		
+		s.UN, s.A = getActiveUser()
 
 		/* Encode the status into JSON. */
 		enc.Encode(&s)
 		println(jsonBuffer.String())
 
 		/* Check if the status has changed. */
-		if (so != jsonBuffer.String() || time.Since(lastSync) > resync ) {
+		if so != jsonBuffer.String() || time.Since(lastSync) > resync {
 			println("Sync required")
 			s.T = time.Now()
 			_, err := socket.WriteToUDP(jsonBuffer.Bytes(), host)
@@ -70,7 +74,9 @@ func heartBeat(socket *net.UDPConn, host *net.UDPAddr, quit chan int, resync tim
 }
 
 func main() {
-	host, err := net.ResolveUDPAddr("udp", os.Args[1]+":69")
+	flag.Parse()
+	println("Sending status packets to server at: "+*ip)
+	host, err := net.ResolveUDPAddr("udp", *ip+":69")
 	checkError(err)
 
 	laddr, err := net.ResolveUDPAddr("udp", ":0")
@@ -80,6 +86,6 @@ func main() {
 	checkError(err)
 
 	routineQuit := make(chan int)
-	go heartBeat(con, host, routineQuit, time.Second * 15)
+	go heartBeat(con, host, routineQuit, time.Second*15)
 	<-routineQuit
 }
