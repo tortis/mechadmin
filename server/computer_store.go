@@ -6,10 +6,11 @@ import "encoding/gob"
 import "log"
 import "math/rand"
 import "github.com/tortis/mechadmin/types"
+import "errors"
 
 type ComputerStore struct {
 	computers map[string]*Computer
-	file      *os.File
+	fname     string
 }
 
 type computerRecord struct {
@@ -18,12 +19,7 @@ type computerRecord struct {
 }
 
 func NewComputerStore(filename string) *ComputerStore {
-	cs := &ComputerStore{computers: make(map[string]*Computer, 0)}
-	f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-	if err != nil {
-		log.Fatal("CollectionStore:", err)
-	}
-	cs.file = f
+	cs := &ComputerStore{computers: make(map[string]*Computer, 0), fname: filename}
 	if err := cs.loadComputers(); err != nil {
 		log.Println("ComputerStore:", err)
 	}
@@ -31,11 +27,19 @@ func NewComputerStore(filename string) *ComputerStore {
 }
 
 func (s *ComputerStore) loadComputers() error {
-	if _, err := s.file.Seek(0, 0); err != nil {
+	f, err := os.OpenFile(s.fname, os.O_RDONLY, 0644)
+	defer f.Close()
+
+	if err != nil {
 		return err
 	}
-	d := gob.NewDecoder(s.file)
-	var err error
+
+	if _, err := f.Seek(0, 0); err != nil {
+		return err
+	}
+
+	d := gob.NewDecoder(f)
+	err = nil
 	for err == nil {
 		var r computerRecord
 		if err = d.Decode(&r); err == nil {
@@ -48,9 +52,21 @@ func (s *ComputerStore) loadComputers() error {
 	return err
 }
 
-func (s *ComputerStore) saveComputer(name string, comp *Computer) error {
-	e := gob.NewEncoder(s.file)
-	return e.Encode(computerRecord{name, comp})
+func (s *ComputerStore) saveComputers() error {
+	f, err := os.OpenFile(s.fname, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
+	if err != nil {
+		log.Println("WARNING: Unable to save computers to store. Some data may have been lost.", err)
+		return err
+	}
+	defer f.Close()
+	e := gob.NewEncoder(f)
+	for k, v := range s.computers {
+		err := e.Encode(computerRecord{Key: k, Comp: v})
+		if err != nil {
+			log.Println("Failed to save a computer record to the store. Some data may havve been lost.", err)
+		}
+	}
+	return nil
 }
 
 func (s *ComputerStore) Get(name string) *Computer {
@@ -58,8 +74,11 @@ func (s *ComputerStore) Get(name string) *Computer {
 }
 
 func (s *ComputerStore) Put(name string, comp *Computer) error {
+	if _, present := s.computers[name]; present {
+		return errors.New("A computer with that key already exists. Computer was not added to store.")
+	}
 	s.computers[name] = comp
-	return s.saveComputer(name, comp)
+	return nil
 }
 
 func (s *ComputerStore) Delete(name string) {
