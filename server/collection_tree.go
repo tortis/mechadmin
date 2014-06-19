@@ -2,9 +2,9 @@ package main
 
 import "math/rand"
 import "strconv"
-import "io/ioutil"
-import "encoding/json"
 import "log"
+import "encoding/gob"
+import "os"
 
 type CollectionTree struct {
 	Name         string
@@ -57,28 +57,31 @@ func NewCollectionTree() *CollectionTree {
 }
 
 func LoadTree(filename string) *CollectionTree {
-	jsonByte, err := ioutil.ReadFile(filename)
-	var r *CollectionTree
+	f,err := os.OpenFile(filename, os.O_RDONLY, 0644)
 	if err != nil {
-		println(filename+" was not found. Creating new tree.")
+		log.Println("Could not open the collection tree file. Creating new tree.")
 		return NewCollectionTree()
-	} else {
-		println(filename+" found. Loading collection tree.")
-		err = json.Unmarshal(jsonByte, r)
-		if err != nil {
-			log.Println("Failed to unmarshal "+filename+". Creating new tree.")
-			return NewCollectionTree()
-		}
-		return r
 	}
+	defer f.Close()
+	d := gob.NewDecoder(f)
+	var r *CollectionTree
+	err = d.Decode(&r)
+	if err != nil {
+		log.Println("Failed to read collection tree file. Creating new tree.")
+		return NewCollectionTree()
+	}
+	return r
 }
 
 func (t *CollectionTree) Save(filename string) error {
-	b, err := json.Marshal(t)
+	f,err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
+		log.Println("Could not save collection tree to disk. Some data may be lost.", err)
 		return err
 	}
-	return ioutil.WriteFile(filename, b, 0644)
+	defer f.Close()
+	e := gob.NewEncoder(f)
+	return e.Encode(t)
 }
 
 func (t *CollectionTree) NewOU(name string) *CollectionTree {

@@ -31,7 +31,7 @@ func init() {
 	CompStore = NewComputerStore("compstore.gob")
 
 	// Load root tree from file or create a new one.
-	root = LoadTree("root.json")
+	root = LoadTree("root.gob")
 	if root == nil {
 		log.Fatal("Failed to create collection tree.")
 	}
@@ -45,7 +45,7 @@ func init() {
 		<-c
 		ColStore.saveCollections()
 		CompStore.saveComputers()
-		if root.Save("root.json") != nil {
+		if root.Save("root.gob") != nil {
 			println("\nError! The root collection tree could not be saved before the program stopped. Some data may have been lost.")
 			os.Exit(1)
 		} else {
