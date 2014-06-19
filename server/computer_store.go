@@ -13,8 +13,8 @@ type ComputerStore struct {
 }
 
 type computerRecord struct {
-	key  string
-	comp *Computer
+	Key  string
+	Comp *Computer
 }
 
 func NewComputerStore(filename string) *ComputerStore {
@@ -39,7 +39,7 @@ func (s *ComputerStore) loadComputers() error {
 	for err == nil {
 		var r computerRecord
 		if err = d.Decode(&r); err == nil {
-			s.computers[r.key] = r.comp
+			s.computers[r.Key] = r.Comp
 		}
 	}
 	if err == io.EOF {
