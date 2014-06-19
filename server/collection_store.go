@@ -5,7 +5,6 @@ import "log"
 import "encoding/gob"
 import "io"
 import "errors"
-import "strconv"
 
 type CollectionStore struct {
 	collections map[uint32]*Collection
@@ -26,46 +25,43 @@ type collectionRecord struct {
 }
 
 func (s *CollectionStore) loadCollections() error {
-	f, err := os.OpenFile(s.fname, os.O_RDWR|os.O_CREATE|os.O_APPEND, 0644)
-	if err != nil {
-		log.Fatal("CollectionStore-OpenFile:", err)
-	}
-
-	println("Loading collections from store.")
+	f, err := os.OpenFile(s.fname, os.O_RDONLY, 0644)
 	defer f.Close()
-	if _, err := f.Seek(0, 0); err != nil {
-		println("Failed to seek 0,0 in file.")
+
+	if err != nil {
 		return err
 	}
+
+	if _, err := f.Seek(0, 0); err != nil {
+		return err
+	}
+
 	d := gob.NewDecoder(f)
 	err = nil
-	count := 0
 	for err == nil {
 		var r collectionRecord
 		if err = d.Decode(&r); err == nil {
 			s.collections[r.Key] = r.Col
-			count++
 		}
 	}
-	println("Loaded " + strconv.Itoa(count) + " records.")
 	if err == io.EOF {
 		return nil
 	}
-	println("There was a problem loading records from the store: " + err.Error())
 	return err
 }
 
 func (s *CollectionStore) saveCollections() error {
 	f, err := os.OpenFile(s.fname, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
-		log.Fatal("CollectionStore-saveCollections-OpenFile", err)
+		log.Println("WARNING: Unable to open store file. Some data may be lost.", err)
+		return err
 	}
 	defer f.Close()
 	e := gob.NewEncoder(f)
 	for k, v := range s.collections {
 		err := e.Encode(collectionRecord{Key: k, Col: v})
 		if err != nil {
-			return err
+			log.Println("WARNING: Failed to write a collection to the store. Some data may be lost.", err)
 		}
 	}
 	return nil
