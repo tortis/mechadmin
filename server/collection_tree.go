@@ -30,8 +30,10 @@ func NewCollectionTree() *CollectionTree {
 		IsSystem:     true,
 		IsCollection: true,
 	}
-	ColStore.Put(ALL_SYS_COL, NewCollection(allSys.Name, ALL_SYS_COL))
-	t.Children = append(t.Children, allSys)
+	err := ColStore.Put(ALL_SYS_COL, NewCollection(allSys.Name, ALL_SYS_COL))
+	if err == nil {
+		t.Children = append(t.Children, allSys)
+	}
 
 	unkSys := &CollectionTree{
 		Name:         `Unknown Systems`,
@@ -40,8 +42,10 @@ func NewCollectionTree() *CollectionTree {
 		IsSystem:     true,
 		IsCollection: true,
 	}
-	ColStore.Put(UNK_SYS_COL, NewCollection(unkSys.Name, UNK_SYS_COL))
-	t.Children = append(t.Children, unkSys)
+	err = ColStore.Put(UNK_SYS_COL, NewCollection(unkSys.Name, UNK_SYS_COL))
+	if err == nil {
+		t.Children = append(t.Children, unkSys)
+	}
 
 	offSys := &CollectionTree{
 		Name:         `Offline Systems`,
@@ -50,9 +54,10 @@ func NewCollectionTree() *CollectionTree {
 		IsSystem:     true,
 		IsCollection: true,
 	}
-	ColStore.Put(OFF_SYS_COL, NewCollection(offSys.Name, OFF_SYS_COL))
-	t.Children = append(t.Children, offSys)
-
+	err = ColStore.Put(OFF_SYS_COL, NewCollection(offSys.Name, OFF_SYS_COL))
+	if err == nil {
+		t.Children = append(t.Children, offSys)
+	}
 	return t
 }
 
