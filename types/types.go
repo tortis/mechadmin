@@ -8,5 +8,6 @@ type Status struct {
 	UD string
 	A bool
 	S string
+	MAC string
 	T time.Time
 }

@@ -42,6 +42,11 @@ func heartBeat(socket *net.UDPConn, host *net.UDPAddr, quit chan int, resync tim
 	var s types.Status
 	var so string
 	var jsonBuffer bytes.Buffer
+	ifaces,err := net.Interfaces()
+	checkError(err)
+	mac := ifaces[1].HardwareAddr.String()
+	println(len(ifaces))
+	println(mac)
 	lastSync := time.Now()
 	enc := json.NewEncoder(&jsonBuffer)
 	for {
@@ -50,7 +55,7 @@ func heartBeat(socket *net.UDPConn, host *net.UDPAddr, quit chan int, resync tim
 		s.CN = os.Getenv("COMPUTERNAME")
 		s.T = time.Now()
 		s.UN, s.A = getActiveUser()
-
+		s.MAC = mac
 		/* Encode the status into JSON. */
 		enc.Encode(&s)
 		println(jsonBuffer.String())
