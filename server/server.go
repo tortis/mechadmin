@@ -44,6 +44,7 @@ func init() {
 	go func() {
 		<-c
 		ColStore.saveCollections()
+		CompStore.saveComputers()
 		if root.Save("root.json") != nil {
 			println("\nError! The root collection tree could not be saved before the program stopped. Some data may have been lost.")
 			os.Exit(1)
