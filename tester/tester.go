@@ -14,33 +14,32 @@ func checkError(err error) {
 	}
 }
 
-
 func sender(toSend chan []byte, stop chan int, s *net.UDPConn, host *net.UDPAddr) {
-    for {
-        select {
-            case msg := <- toSend:
-                s.WriteToUDP(msg, host)
-            case <- stop:
-                return
-        }
-    }
+	for {
+		select {
+		case msg := <-toSend:
+			s.WriteToUDP(msg, host)
+		case <-stop:
+			return
+		}
+	}
 }
 
 func nameGen() string {
-    b := make([]byte, 0)
-    len := rand.Int() % 10 + 5
-    println(len)
-    for c := len; c > 0; c-- {
-        b = append(b, byte(rand.Int() % 26 + 97))
-    }
-    return string(b[0:len])
+	b := make([]byte, 0)
+	len := rand.Int()%10 + 5
+	println(len)
+	for c := len; c > 0; c-- {
+		b = append(b, byte(rand.Int()%26+97))
+	}
+	return string(b[0:len])
 }
 
 func main() {
 	flag.Parse()
-    rand.Seed(42)
-	println("Sending status packets to server at: "+*ip)
-    
+	rand.Seed(42)
+	println("Sending status packets to server at: " + *ip)
+
 	host, err := net.ResolveUDPAddr("udp", *ip+":69")
 	checkError(err)
 	laddr, err := net.ResolveUDPAddr("udp", ":0")
@@ -49,12 +48,12 @@ func main() {
 	checkError(err)
 
 	routineQuit := make(chan int)
-    send := make(chan []byte, 10)
-    go sender(send, routineQuit, con, host)
-    
-    for num := 0; num < 100; num++ {
-        go NewClient(nameGen(), nameGen()).start(send, routineQuit)
-        time.Sleep(time.Second * 2)
-    }
-    <-routineQuit
+	send := make(chan []byte, 10)
+	go sender(send, routineQuit, con, host)
+
+	for num := 0; num < 100; num++ {
+		go NewClient(nameGen(), nameGen()).start(send, routineQuit)
+		time.Sleep(time.Second * 2)
+	}
+	<-routineQuit
 }
