@@ -43,18 +43,18 @@ func (col *Collection) RemoveComputer(name string) bool {
 
 func (col *Collection) ContainsComputer(name string) bool {
 	result := sort.SearchStrings(col.Computers, name)
-	if result >= len(col.Computers)  {
+	if result >= len(col.Computers) {
 		return false
 	}
 	if col.Computers[result] == name {
-		return true;
+		return true
 	} else {
-		return false;
+		return false
 	}
 }
 
 func (col *Collection) PrintComputers() {
-	for _,c := range(col.Computers) {
+	for _, c := range col.Computers {
 		println(c)
 	}
 }

@@ -4,8 +4,8 @@ import "code.google.com/p/go.net/websocket"
 import "encoding/json"
 
 type connection struct {
-	ws      *websocket.Conn
-	send    chan []byte
+	ws   *websocket.Conn
+	send chan []byte
 }
 
 func (c *connection) reader() {

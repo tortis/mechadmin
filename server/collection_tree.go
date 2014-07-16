@@ -62,7 +62,7 @@ func NewCollectionTree() *CollectionTree {
 }
 
 func LoadTree(filename string) *CollectionTree {
-	f,err := os.OpenFile(filename, os.O_RDONLY, 0644)
+	f, err := os.OpenFile(filename, os.O_RDONLY, 0644)
 	if err != nil {
 		log.Println("Could not open the collection tree file. Creating new tree.")
 		return NewCollectionTree()
@@ -79,7 +79,7 @@ func LoadTree(filename string) *CollectionTree {
 }
 
 func (t *CollectionTree) Save(filename string) error {
-	f,err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
+	f, err := os.OpenFile(filename, os.O_RDWR|os.O_CREATE|os.O_TRUNC, 0644)
 	if err != nil {
 		log.Println("Could not save collection tree to disk. Some data may be lost.", err)
 		return err
