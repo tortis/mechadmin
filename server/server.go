@@ -7,6 +7,7 @@ import "time"
 import "github.com/tortis/mechadmin/types"
 import "os"
 import "os/signal"
+import "flag"
 
 func checkError(err error) {
 	if err != nil {
@@ -17,6 +18,8 @@ func checkError(err error) {
 /* Global variables */
 var ColStore *CollectionStore
 var CompStore *ComputerStore
+var htmldir = flag.String("dir", "www/static", "Specify the static http hosted directory.")
+
 //var CompStore *ComputerStore
 var root *CollectionTree
 var wsHub = hub{
@@ -27,6 +30,7 @@ var wsHub = hub{
 }
 
 func init() {
+	flag.Parse()
 	ColStore = NewCollectionStore("colstore.gob")
 	CompStore = NewComputerStore("compstore.gob")
 
@@ -62,7 +66,6 @@ func main() {
 	checkError(err)
 	sock, err := net.ListenUDP("udp", addr)
 	checkError(err)
-
 
 	/*------------ Testing-----------------*/
 	//root.NewCol(`Learning Spaces`)

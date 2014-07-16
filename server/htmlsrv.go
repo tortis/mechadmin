@@ -37,7 +37,7 @@ func makeHandler(fn func(http.ResponseWriter, *http.Request, *CollectionTree), c
 }
 
 func StartWebServer() {
-	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir("www/static"))))
+	http.Handle("/static/", http.StripPrefix("/static/", http.FileServer(http.Dir(*htmldir))))
 	http.HandleFunc("/", handler)
 	http.Handle("/ws/", websocket.Handler(WSHandler))
 	go wsHub.run()
