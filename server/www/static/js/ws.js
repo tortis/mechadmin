@@ -23,6 +23,10 @@ function onClose(evt) {
 }
 
 function onMessage(evt) {
+	var msg = JSON.parse(evt.data);
+	if (msg.R = "list-compR") {
+		writeToScreen("Recieved a list-comp response.");
+	}
 	writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data + '</span>');
 	if (evt.data === "bye") {
 		websocket.close();
