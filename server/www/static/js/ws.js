@@ -3,10 +3,7 @@ var output;
 var websocket;
 
 function writeToScreen(message) {
-	var pre = document.createElement("p");
-	pre.style.wordWrap = "break-word";
-	pre.innerHTML = message;
-	output.appendChild(pre);
+	$("#content").append("<p>"+message+"</p>")
 }
 
 function doSend(message) {
@@ -25,9 +22,13 @@ function onClose(evt) {
 function onMessage(evt) {
 	var msg = JSON.parse(evt.data);
 	if (msg.R = "list-compR") {
-		writeToScreen("Recieved a list-comp response.");
+		make_computer_table();
+		for (i=0; i < msg.D.length; i++)  {
+			$('#comp-table').append(
+				$('<tr>').attr("id", "comp-"+msg.D[i]).append(
+					$('<td>').append(msg.D[i])));
+		}
 	}
-	writeToScreen('<span style="color: blue;">RESPONSE: ' + evt.data + '</span>');
 	if (evt.data === "bye") {
 		websocket.close();
 	}
