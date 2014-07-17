@@ -5,6 +5,7 @@ import "log"
 import "flag"
 import "math/rand"
 import "time"
+import "strconv"
 
 var ip = flag.String("s", "localhost", "Specify the hostname or IP of the management server.")
 
@@ -35,6 +36,17 @@ func nameGen() string {
 	return string(b[0:len])
 }
 
+func macGen() string {
+	r := ""
+	for i := 0; i < 6; i++ {
+		r += strconv.FormatInt(rand.Int63()%255, 16)
+		if (i < 5) {
+			r += ":"
+		}
+	}
+	return r
+}
+
 func main() {
 	flag.Parse()
 	rand.Seed(42)
@@ -52,7 +64,7 @@ func main() {
 	go sender(send, routineQuit, con, host)
 
 	for num := 0; num < 100; num++ {
-		go NewClient(nameGen(), nameGen()).start(send, routineQuit)
+		go NewClient(nameGen(), nameGen(), macGen()).start(send, routineQuit)
 		time.Sleep(time.Second * 2)
 	}
 	<-routineQuit
