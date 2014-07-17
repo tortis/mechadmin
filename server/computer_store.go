@@ -69,35 +69,36 @@ func (s *ComputerStore) saveComputers() error {
 	return nil
 }
 
-func (s *ComputerStore) Get(name string) *Computer {
-	return s.computers[name]
+func (s *ComputerStore) Get(MAC string) *Computer {
+	return s.computers[MAC]
 }
 
-func (s *ComputerStore) Put(name string, comp *Computer) error {
-	if _, present := s.computers[name]; present {
+func (s *ComputerStore) Put(comp *Computer) error {
+	MAC := comp.Info.MAC
+	if _, present := s.computers[MAC]; present {
 		return errors.New("A computer with that key already exists. Computer was not added to store.")
 	}
-	s.computers[name] = comp
+	s.computers[MAC] = comp
 	return nil
 }
 
-func (s *ComputerStore) Delete(name string) {
+func (s *ComputerStore) Delete(MAC string) {
 	//Also delete computer from associated collections.
-	delete(s.computers, name)
+	delete(s.computers, MAC)
 }
 
 func (s *ComputerStore) UpdateOrAddComputer(stat *types.Status) *Computer {
-	_, present := s.computers[stat.CN]
+	_, present := s.computers[stat.MAC]
 	if present == true {
-		s.computers[stat.CN].Info = *stat
-		return s.computers[stat.CN]
+		s.computers[stat.MAC].Info = *stat
+		return s.computers[stat.MAC]
 	} else {
 		c := &Computer{
 			Info: *stat,
 			UID:  rand.Uint32(),
 		}
-		s.Put(stat.CN, c)
-		ColStore.Get(ALL_SYS_COL).AddComputer(stat.CN)
+		s.Put(c)
+		ColStore.Get(ALL_SYS_COL).AddComputer(stat.MAC)
 		return c
 	}
 }

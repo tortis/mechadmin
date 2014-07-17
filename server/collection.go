@@ -22,18 +22,18 @@ func NewCollection(name string, uid uint32) *Collection {
 	return c
 }
 
-func (col *Collection) AddComputer(name string) {
-	if col.ContainsComputer(name) {
+func (col *Collection) AddComputer(MAC string) {
+	if col.ContainsComputer(MAC) {
 		return
 	}
-	col.Computers = append(col.Computers, name)
+	col.Computers = append(col.Computers, MAC)
 	sort.Strings(col.Computers)
-	wsHub.broadcast <- []byte("Adding new computer, " + name + " into collection, " + col.Name)
+	wsHub.broadcast <- []byte("Adding new computer, " + MAC + " into collection, " + col.Name)
 }
 
-func (col *Collection) RemoveComputer(name string) bool {
-	result := sort.SearchStrings(col.Computers, name)
-	if col.Computers[result] == name {
+func (col *Collection) RemoveComputer(MAC string) bool {
+	result := sort.SearchStrings(col.Computers, MAC)
+	if col.Computers[result] == MAC {
 		col.Computers = append(col.Computers[:result], col.Computers[result+1:]...)
 		return true
 	} else {
@@ -41,12 +41,12 @@ func (col *Collection) RemoveComputer(name string) bool {
 	}
 }
 
-func (col *Collection) ContainsComputer(name string) bool {
-	result := sort.SearchStrings(col.Computers, name)
+func (col *Collection) ContainsComputer(MAC string) bool {
+	result := sort.SearchStrings(col.Computers, MAC)
 	if result >= len(col.Computers) {
 		return false
 	}
-	if col.Computers[result] == name {
+	if col.Computers[result] == MAC {
 		return true
 	} else {
 		return false
