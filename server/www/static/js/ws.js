@@ -20,13 +20,14 @@ function onClose(evt) {
 }
 
 function onMessage(evt) {
+	console.log(evt.data);
 	var msg = JSON.parse(evt.data);
 	if (msg.R = "list-compR") {
 		make_computer_table();
 		for (i=0; i < msg.D.length; i++)  {
 			$('#comp-table').append(
-				$('<tr>').attr("id", "comp-"+msg.D[i]).append(
-					$('<td>').append(msg.D[i])));
+				$('<tr>').attr("id", "comp-"+msg.D[i].MAC).append(
+					$('<td>').append(msg.D[i].CN)));
 		}
 	}
 	if (evt.data === "bye") {
