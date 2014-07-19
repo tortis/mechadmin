@@ -10,7 +10,7 @@ function make_computer_table() {
 }
 
 function handle_message(msg) {
-	if (msg.R = "list-compR") {
+	if (msg.R == "list-compR") {
 		make_computer_table();
 		for (i=0; i < msg.D.length; i++)  {
 			$('#comp-table').append(
@@ -18,7 +18,7 @@ function handle_message(msg) {
 					$('<td>').append(msg.D[i].CN)));
 		}
 	}
-	else if (evt.data === "bye") {
+	else if (msg.R == "bye") {
 		websocket.close();
 	}
 }
