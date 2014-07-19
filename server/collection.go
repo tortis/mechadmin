@@ -1,6 +1,7 @@
 package main
 
 import "sort"
+import "encoding/json"
 
 /* System Collection UIDs. */
 const ALL_SYS_COL uint32 = 0
@@ -11,6 +12,7 @@ type Collection struct {
 	Name      string
 	UID       uint32
 	Computers []string
+	Sub       *subscription
 }
 
 func NewCollection(name string, uid uint32) *Collection {
@@ -18,6 +20,7 @@ func NewCollection(name string, uid uint32) *Collection {
 		Name:      name,
 		UID:       uid,
 		Computers: make([]string, 0),
+		Sub:       NewSubscription(),
 	}
 	return c
 }
@@ -28,12 +31,17 @@ func (col *Collection) AddComputer(MAC string) {
 	}
 	col.Computers = append(col.Computers, MAC)
 	sort.Strings(col.Computers)
-	wsHub.broadcast <- []byte("Adding new computer, " + MAC + " into collection, " + col.Name)
+	rJSON, err := json.Marshal(WSResponse{"add-compR", CompStore.Get(MAC).Info})
+	checkError(err)
+	col.Sub.Send(rJSON)
 }
 
 func (col *Collection) RemoveComputer(MAC string) bool {
 	result := sort.SearchStrings(col.Computers, MAC)
 	if col.Computers[result] == MAC {
+		rJSON, err := json.Marshal(WSResponse{"rm-compR", MAC})
+		checkError(err)
+		col.Sub.Send(rJSON)
 		col.Computers = append(col.Computers[:result], col.Computers[result+1:]...)
 		return true
 	} else {
@@ -51,6 +59,14 @@ func (col *Collection) ContainsComputer(MAC string) bool {
 	} else {
 		return false
 	}
+}
+
+func (col *Collection) Subscribe(c *connection) {
+	col.Sub.Subscribe(c)
+}
+
+func (col *Collection) Unsubscribe(c *connection) {
+	col.Sub.Unsubscribe(c)
 }
 
 func (col *Collection) PrintComputers() {
