@@ -23,7 +23,7 @@ func handler(w http.ResponseWriter, r *http.Request) {
 
 // Echo the data received on the WebSocket.
 func WSHandler(ws *websocket.Conn) {
-	c := &connection{send: make(chan []byte, 256), ws: ws}
+	c := &connection{send: make(chan []byte, 16), ws: ws}
 	wsHub.register <- c
 	defer func() { wsHub.unregister <- c }()
 	go c.writer()
