@@ -42,6 +42,7 @@ func (s *CollectionStore) loadCollections() error {
 		var r collectionRecord
 		if err = d.Decode(&r); err == nil {
 			s.collections[r.Key] = r.Col
+			s.collections[r.Key].Sub = NewSubscription()
 		}
 	}
 	if err == io.EOF {
