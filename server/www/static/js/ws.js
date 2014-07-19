@@ -20,28 +20,13 @@ function onClose(evt) {
 }
 
 function onMessage(evt) {
-	console.log(evt.data);
 	var msg = JSON.parse(evt.data);
 	console.log(msg.R);
-	if (msg.R = "list-compR") {
-		make_computer_table();
-		for (i=0; i < msg.D.length; i++)  {
-			$('#comp-table').append(
-				$('<tr>').attr("id", "comp-"+msg.D[i].MAC).append(
-					$('<td>').append(msg.D[i].CN)));
-		}
-	}
-	if (evt.data === "bye") {
-		websocket.close();
-	}
+	handle_message(msg);
 }
 
 function onError(evt) {
 	writeToScreen('<span style="color: red;">ERROR:</span> ' + evt.data);
-}
-
-function testit() {
-	doSend(document.getElementById("in").value);
 }
 
 function bindSocket() {
@@ -55,14 +40,6 @@ function bindSocket() {
 function init() {
 	output = document.getElementById("content");
 	bindSocket();
-}
-
-function requestCol(e) {
-    var req = {
-        R: 'list-comp',
-        A1: e.id
-    };
-    doSend(JSON.stringify(req));
 }
 
 window.addEventListener("load", init, false);
