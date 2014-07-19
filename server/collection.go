@@ -12,7 +12,7 @@ type Collection struct {
 	Name      string
 	UID       uint32
 	Computers []string
-	Sub       *subscription
+	sub       *subscription
 }
 
 func NewCollection(name string, uid uint32) *Collection {
@@ -20,7 +20,7 @@ func NewCollection(name string, uid uint32) *Collection {
 		Name:      name,
 		UID:       uid,
 		Computers: make([]string, 0),
-		Sub:       NewSubscription(),
+		sub:       NewSubscription(),
 	}
 	return c
 }
@@ -33,7 +33,7 @@ func (col *Collection) AddComputer(MAC string) {
 	sort.Strings(col.Computers)
 	rJSON, err := json.Marshal(WSResponse{"add-compR", CompStore.Get(MAC).Info})
 	checkError(err)
-	col.Sub.Send(rJSON)
+	col.sub.Send(rJSON)
 }
 
 func (col *Collection) RemoveComputer(MAC string) bool {
@@ -41,7 +41,7 @@ func (col *Collection) RemoveComputer(MAC string) bool {
 	if col.Computers[result] == MAC {
 		rJSON, err := json.Marshal(WSResponse{"rm-compR", MAC})
 		checkError(err)
-		col.Sub.Send(rJSON)
+		col.sub.Send(rJSON)
 		col.Computers = append(col.Computers[:result], col.Computers[result+1:]...)
 		return true
 	} else {
@@ -62,11 +62,11 @@ func (col *Collection) ContainsComputer(MAC string) bool {
 }
 
 func (col *Collection) Subscribe(c *connection) {
-	col.Sub.Subscribe(c)
+	col.sub.Subscribe(c)
 }
 
 func (col *Collection) Unsubscribe(c *connection) {
-	col.Sub.Unsubscribe(c)
+	col.sub.Unsubscribe(c)
 }
 
 func (col *Collection) PrintComputers() {
