@@ -1,11 +1,11 @@
 package main
 
 type subscription struct {
-	subs	map[*connection]bool
+	subs map[*connection]bool
 }
 
 func NewSubscription() *subscription {
-	return &subscription{subs:make(map[*connection]bool)}
+	return &subscription{subs: make(map[*connection]bool)}
 }
 
 func (s *subscription) Subscribe(c *connection) {
@@ -17,13 +17,13 @@ func (s *subscription) Unsubscribe(c *connection) {
 }
 
 func (s *subscription) Send(msg []byte) {
-	for c,a := range s.subs {
+	for c, a := range s.subs {
 		if a == true {
-			select {	// Use select to prevent blocking on full channel.
+			select { // Use select to prevent blocking on full channel.
 			case c.send <- msg:
 			default:
 				delete(s.subs, c)
-					// If the msg cant be sent, unSubscribe
+				// If the msg cant be sent, unSubscribe
 			}
 		}
 	}
