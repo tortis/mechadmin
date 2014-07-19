@@ -22,6 +22,7 @@ function onClose(evt) {
 function onMessage(evt) {
 	console.log(evt.data);
 	var msg = JSON.parse(evt.data);
+	console.log(msg.R);
 	if (msg.R = "list-compR") {
 		make_computer_table();
 		for (i=0; i < msg.D.length; i++)  {
