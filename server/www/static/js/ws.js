@@ -7,7 +7,6 @@ function writeToScreen(message) {
 }
 
 function doSend(message) {
-	writeToScreen("SENT: " + message);
 	websocket.send(message);
 }
 

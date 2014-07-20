@@ -57,6 +57,10 @@ div{
 	width: 100%;
 }
 
+#comp-table td th {
+	padding: 3px 20px 3px 3px;
+}
+
 .content-row {
 	display: table-row;
 	border-style: solid;
