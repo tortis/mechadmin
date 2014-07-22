@@ -1,4 +1,4 @@
-var wsUri = "ws://192.168.1.203:8080/ws/";
+var wsUri = "ws://gobox.geared.info:12345/ws/";
 var output;
 var websocket;
 
@@ -7,7 +7,6 @@ function writeToScreen(message) {
 }
 
 function doSend(message) {
-	writeToScreen("SENT: " + message);
 	websocket.send(message);
 }
 

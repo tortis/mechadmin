@@ -41,5 +41,5 @@ func StartWebServer() {
 	http.HandleFunc("/", handler)
 	http.Handle("/ws/", websocket.Handler(WSHandler))
 	go wsHub.run()
-	http.ListenAndServe(":8080", nil)
+	http.ListenAndServe(":12345", nil)
 }
