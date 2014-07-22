@@ -96,9 +96,10 @@ func (s *ComputerStore) UpdateOrAddComputer(stat *types.Status) *Computer {
 		c := &Computer{
 			Info: *stat,
 			UID:  rand.Uint32(),
+			Cols: make([]uint32, 0),
 		}
 		s.Put(c)
-		ColStore.Get(ALL_SYS_COL).AddComputer(stat.MAC)
+		ColStore.Get(ALL_SYS_COL).AddComputer(c)
 		return c
 	}
 }

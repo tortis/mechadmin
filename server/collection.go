@@ -2,6 +2,7 @@ package main
 
 import "sort"
 import "encoding/json"
+import "github.com/tortis/mechadmin/types"
 
 /* System Collection UIDs. */
 const ALL_SYS_COL uint32 = 0
@@ -25,12 +26,14 @@ func NewCollection(name string, uid uint32) *Collection {
 	return c
 }
 
-func (col *Collection) AddComputer(MAC string) {
+func (col *Collection) AddComputer(c *Computer) {
+	MAC := c.Info.MAC
 	if col.ContainsComputer(MAC) {
 		return
 	}
 	col.Computers = append(col.Computers, MAC)
 	sort.Strings(col.Computers)
+	c.Cols = append(c.Cols, col.UID)
 	rJSON, err := json.Marshal(WSResponse{"add-compR", CompStore.Get(MAC).Info})
 	checkError(err)
 	col.sub.Send(rJSON)
@@ -59,6 +62,12 @@ func (col *Collection) ContainsComputer(MAC string) bool {
 	} else {
 		return false
 	}
+}
+
+func (col *Collection) UpdateComputer(s *types.Status) {
+	JSON, err := json.Marshal(WSResponse{"comp-updateR", s})
+	checkError(err)
+	col.sub.Send(JSON)
 }
 
 func (col *Collection) Subscribe(c *connection) {
