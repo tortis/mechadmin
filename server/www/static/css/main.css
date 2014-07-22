@@ -53,33 +53,39 @@ div{
 }
 
 #content {
-	padding: 30px 30px 30px 50px;
+	padding: 0px;
 	width: 100%;
 }
 
-.content-row {
-	display: table-row;
-	border-style: solid;
-	border-bottom-width: 1px;
-	border-color: white;
-	background: rgba(200,200,200,220);
+#comp-table {
+	width: 100%;
+	margin-right: 200px;
+	border-left: 1px solid #fff;
 }
 
-.content-cell {
-	display: table-cell;
-	padding: 5px 30px 5px 5px
-	border-style: solid;
-	border-color: white;
-	border-right-width: 1px;
-	white-space: nowrap;
+#comp-table tr > td {
+	padding: 3px 20px 3px 3px;
+	border-width: 0;
+	color: #ddd;
+	border-right: 1px solid #888;
 }
 
-.content-cell-header {
-
+#comp-table tr:nth-child(even) {
+	background: rgb(80,80,80);
 }
 
-.comp-item {
+#comp-table tr:nth-child(odd) {
+	background: rgb(100,100,100);
+}
 
+#comp-table tr:first-child {
+	background-color: #38989c;
+}
+
+#comp-table tr > th {
+	padding: 3px 20px 3px 3px;
+	border-right: 1px solid #fff;
+	color: #fff;
 }
 
 .load {

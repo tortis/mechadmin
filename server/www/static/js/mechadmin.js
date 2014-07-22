@@ -1,7 +1,7 @@
 function make_computer_table() {
 	$('#content').empty();
 	$('#content').append(
-		$('<table>').attr("id", "comp-table").append(
+		$('<table>').attr("id", "comp-table").attr("cellspacing", "0").append(
 			$('<tr>').append(
 				$('<th>').append("Computer Name")).append(
 				$('<th>').append("Active User")).append(
@@ -15,7 +15,10 @@ function handle_message(msg) {
 		for (i=0; i < msg.D.length; i++)  {
 			$('#comp-table').append(
 				$('<tr>').attr("id", "comp-"+msg.D[i].MAC).append(
-					$('<td>').append(msg.D[i].CN)));
+					$('<td>').append(msg.D[i].CN)).append(
+					$('<td>').append(msg.D[i].UN)).append(
+					$('<td>').append(msg.D[i].S)).append(
+					$('<td>').append(msg.D[i].IP)));
 		}
 	}
 	else if (msg.R == "bye") {
